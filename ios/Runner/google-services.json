@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "1022131847009",
+    "firebase_url": "https://tfnd-app-default-rtdb.firebaseio.com",
+    "project_id": "tfnd-app",
+    "storage_bucket": "tfnd-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022131847009:android:2859e78157c04cae184f20",
+        "android_client_info": {
+          "package_name": "com.Tfndappproduction"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQlTiFS0bjIVbSE-vyerzwjyqxB3PQ2Qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022131847009:android:7b0e782e1fd4f6c9184f20",
+        "android_client_info": {
+          "package_name": "com.example.tfnd_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQlTiFS0bjIVbSE-vyerzwjyqxB3PQ2Qk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
