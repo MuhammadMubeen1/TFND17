@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tfnd_app/screens/adminSide/buttom_navigation.dart';
+import 'package:tfnd_app/screens/auth/otpverfied.dart';
 import 'package:tfnd_app/screens/auth/signup.dart';
 import 'package:tfnd_app/screens/userSide/bottomnavbar.dart';
 import 'package:tfnd_app/themes/color.dart';
@@ -99,9 +100,19 @@ class SignInController {
             gravity: ToastGravity.TOP,
             backgroundColor: AppColor.btnColor,
             textColor: Colors.black,
-          );
+          );  
+          Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => EmailVerificationScreen(),
+          ),
+        );
+           
+          
           return;
+          
         }
+       
 
         // Proceed with logging in the user
         await preferences.setBool('isLoggedIn', true);

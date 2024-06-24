@@ -25,7 +25,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   void initState() {
     super.initState();
     // Start the timer to check email verification status periodically
-    timer = Timer.periodic (Duration(seconds: 2), (timer) {
+    timer = Timer.periodic (Duration(seconds: 1), (timer) {
       checkEmailVerified();
        
     });

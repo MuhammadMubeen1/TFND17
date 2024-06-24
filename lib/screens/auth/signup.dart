@@ -18,6 +18,7 @@ import 'package:tfnd_app/themes/color.dart';
 import 'package:tfnd_app/widgets/country_picker.dart';
 import 'package:tfnd_app/widgets/dropdown_button.dart';
 import 'package:tfnd_app/widgets/phonfield.dart';
+import 'package:tfnd_app/widgets/privcy_police.dart';
 import 'package:tfnd_app/widgets/reusable_button.dart';
 import 'package:tfnd_app/widgets/reusable_text.dart';
 import 'package:tfnd_app/widgets/reusable_textformfield.dart';
@@ -464,6 +465,7 @@ IntlPhoneField(
                 const SizedBox(height: 15),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const ReusableText(
                       title: "Already have an account?",
@@ -497,51 +499,62 @@ IntlPhoneField(
  
   child: Column(
     mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+
     children: [
      const Center(
-        child: const Text(
+        child:  Text(
           "By tapping Register, you agree to our",
           style: TextStyle(fontSize: 12),
         ),
       ),
       Center(
-        child: Padding(
-          padding: EdgeInsets.only(left: 30),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  _launchURL('https://thefemalenetworkdubai.com/privacy-policy');
-                },
-                child: const Text(
-                  "Terms of Use (EULA)",
-                  style: TextStyle(
-                          fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.btnColor, // Set text color to blue
-                  ),
-                ),
-              ),
-              const Text(
-                " and ",
-              ),
-              GestureDetector(
-                onTap: () {
-                  _launchURL('https://thefemalenetworkdubai.com/privacy-policy');
-                },
-                child: const  Text(
-               
-                  "Privacy Policy",
-                  style: TextStyle(
-                    
-                        fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.btnColor, // Set text color to blue
-                  ),
-                ),
-              ),
-            ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () {
+             Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) =>  PrivacyPolicyScreen(),
           ),
+        );
+              },
+              child: const Text(
+                "Terms of Use (EULA)",
+                style: TextStyle(
+                        fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppColor.btnColor, // Set text color to blue
+                ),
+              ),
+            ),
+            const Text(
+              " and ",
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => PrivacyPolicyScreen(),
+          ),
+        );
+              },
+              child: const  Text(
+             
+                "Privacy Policy",
+                style: TextStyle(
+                  
+                      fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppColor.btnColor, // Set text color to blue
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     ],

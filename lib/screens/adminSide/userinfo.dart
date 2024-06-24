@@ -141,7 +141,7 @@ class _UserProfileState extends State<Userprofile> {
         centerTitle: true,
         automaticallyImplyLeading: true,
         title: const ReusableText(
-          title: "Profile",
+          title: "User Info",
           color: AppColor.blackColor,
           size: 20,
           weight: FontWeight.w500,
@@ -165,7 +165,7 @@ class _UserProfileState extends State<Userprofile> {
                               as ImageProvider<Object>?,
                   radius: 70,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 10),
                 ReusableTextForm(
                   readOnly: true,
                   hintText: widget.username ?? 'No Username',
@@ -174,7 +174,7 @@ class _UserProfileState extends State<Userprofile> {
                     color: AppColor.hintColor,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 ReusableTextForm(
                   readOnly: true,
                   hintText: widget.email ?? 'No Email',
@@ -183,7 +183,7 @@ class _UserProfileState extends State<Userprofile> {
                     color: AppColor.hintColor,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 ReusableTextForm(
                   readOnly: true,
                   hintText: widget.phone ?? 'No Phone',
@@ -192,13 +192,13 @@ class _UserProfileState extends State<Userprofile> {
                     color: AppColor.hintColor,
                   ),
                 ),
-                const SizedBox(height: 20),
-
                 const SizedBox(height: 10),
+
+           
                 TextField(
                   style: const TextStyle(
                     color: Colors.grey, // Change text color
-                    fontSize: 12.0, // Change text size
+                    fontSize: 15.0, // Change text size
                   ),
                   decoration: InputDecoration(
                     fillColor: Colors.white,
@@ -231,15 +231,7 @@ class _UserProfileState extends State<Userprofile> {
                   maxLines: null,
                 ),
 
-                //     maxLines:5,
-                //   readOnly: true,
-                //   hintText: widget.location?? 'No Location',
-                //   prefixIcon: const Icon(
-                //     Icons.location_on_outlined,
-                //     color: AppColor.hintColor,
-                //   ),
-                // ),
-                const SizedBox(height: 20),
+              const SizedBox(height: 10),
                 ReusableTextForm(
                   readOnly: true,
                   hintText: widget.state ?? 'No state',
@@ -248,7 +240,22 @@ class _UserProfileState extends State<Userprofile> {
                     color: AppColor.hintColor,
                   ),
                 ),
-                const SizedBox(height: 20),
+  const SizedBox(height: 10),
+                 ReusableTextForm(
+                  maxLines: 1,
+                  readOnly: true,
+                  hintText: widget.industeries ?? 'industeries',
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.only(top: 13, left: 12),
+                    child: FaIcon(
+                      FontAwesomeIcons.globe,
+                      color: Colors.grey,
+                      size: 20.0,
+                    ),
+                  ),
+                ),
+              
+                const SizedBox(height: 10),
 
                 ReusableTextForm(
                   maxLines: 1,
@@ -260,7 +267,7 @@ class _UserProfileState extends State<Userprofile> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
                 ReusableTextForm(
                   maxLines: 1,
                   readOnly: true,
@@ -271,23 +278,11 @@ class _UserProfileState extends State<Userprofile> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 10),
 
-                ReusableTextForm(
-                  maxLines: 1,
-                  readOnly: true,
-                  hintText: widget.industeries ?? 'No Country',
-                  prefixIcon: const Padding(
-                    padding: EdgeInsets.only(top: 13, left: 12),
-                    child: FaIcon(
-                      FontAwesomeIcons.globe,
-                      color: Colors.grey,
-                      size: 20.0,
-                    ),
-                  ),
-                ),
+               
 
-                const SizedBox(height: 20),
+               
                 ReusableButton(
                   title: isRestricted ? 'Unrestrict User' : 'Restrict User',
                   onTap: () {

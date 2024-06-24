@@ -29,7 +29,7 @@ class _SplashBodyState extends State<SplashBody> {
   }
 
   void navigate() async {
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(seconds: 1));
 
     final isLoggedIn = await checkLoginStatus();
     if (isLoggedIn) {

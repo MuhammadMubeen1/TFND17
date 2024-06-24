@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:tfnd_app/Controllors/profilr_controllor.dart';
 import 'package:tfnd_app/models/AddUserModel.dart';
@@ -31,12 +29,12 @@ class profileBar extends StatefulWidget {
 
 class _ProfileBarState extends State<profileBar> {
   final ProfileController _controller = ProfileController();
+  bool _passwordVisible = false;
   AddUserModel? userData;
   String? status;
 
   @override
   void initState() {
-
     super.initState();
     _controller.getUserDataStream(widget.currentUserEmail).listen((user) {
       setState(() {
@@ -106,7 +104,8 @@ class _ProfileBarState extends State<profileBar> {
           onRefresh: () async {
             // Refresh the user data and request status
             setState(() {
-              _controller.listenToRequestStatus(widget.currentUserEmail, (newStatus) {
+              _controller.listenToRequestStatus(widget.currentUserEmail,
+                  (newStatus) {
                 setState(() {
                   status = newStatus;
                 });
@@ -123,8 +122,10 @@ class _ProfileBarState extends State<profileBar> {
                       children: [
                         const SizedBox(height: 10),
                         CircleAvatar(
-                          backgroundImage: (userData!.image != null && userData!.image!.isNotEmpty)
-                              ? NetworkImage(userData!.image!) as ImageProvider<Object>?
+                          backgroundImage: (userData!.image != null &&
+                                  userData!.image!.isNotEmpty)
+                              ? NetworkImage(userData!.image!)
+                                  as ImageProvider<Object>?
                               : const AssetImage("assets/images/tfndlog.jpg"),
                           radius: 70,
                         ),
@@ -199,11 +200,13 @@ class _ProfileBarState extends State<profileBar> {
                               borderRadius: BorderRadius.circular(18.0),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white, width: 2.0),
+                              borderSide: const BorderSide(
+                                  color: Colors.white, width: 2.0),
                               borderRadius: BorderRadius.circular(18.0),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.white, width: 1.0),
+                              borderSide: const BorderSide(
+                                  color: Colors.white, width: 1.0),
                               borderRadius: BorderRadius.circular(18.0),
                             ),
                           ),
@@ -341,70 +344,190 @@ class _ProfileBarState extends State<profileBar> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute<void>(
-        builder: (BuildContext context) => signin(email2: widget.currentUserEmail),
+        builder: (BuildContext context) =>
+            signin(email2: widget.currentUserEmail),
       ),
     );
   }
-Future<void> deleteAccount() async {
-  try {
-    // Find the user document by email
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('RegisterUsers')
-        .where('email', isEqualTo: widget.currentUserEmail)
-        .get();
 
-    print('Query Snapshot: $querySnapshot'); // Add this print statement
+  Future<void> deleteAccount() async {
+    try {
+      // Find the user document by email
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('RegisterUsers')
+          .where('email', isEqualTo: widget.currentUserEmail)
+          .get();
 
-    // Check if the document exists
-    if (querySnapshot.size > 0) {
-      // Get the document ID (should be only one document)
-      String docId = querySnapshot.docs[0].id;
-      print('Doc ID: $docId'); // Add this print statement
- _Account_confirmation();
-      // Delete the document
-      await FirebaseFirestore.instance.collection('RegisterUsers').doc(docId).delete();
- Navigator.pushReplacement(
-      context,
-      MaterialPageRoute<void>(
-        builder: (BuildContext context) => signin(email2: widget.currentUserEmail),
-      ),
-    );
-      // Delete the Firebase Authentication user
-    } else {
-      print('No document found with email: ${widget.currentUserEmail}');
+      print('Query Snapshot: $querySnapshot'); // Add this print statement
+
+      // Check if the document exists
+      if (querySnapshot.size > 0) {
+        // Get the document ID (should be only one document)
+        String docId = querySnapshot.docs[0].id;
+        print('Doc ID: $docId'); // Add this print statement
+        _Account_confirmation();
+        // Delete the document
+        await FirebaseFirestore.instance
+            .collection('RegisterUsers')
+            .doc(docId)
+            .delete();
+               final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) =>
+                signin(email2:""),
+          ),
+        );
+        // Delete the Firebase Authentication user
+      } else {
+        print('No document found with email: ${widget.currentUserEmail}');
+      }
+    } catch (e) {
+      print("Error deleting account: $e");
+      rethrow; // Rethrow the error to stop the function execution
     }
-  } catch (e) {
-    print("Error deleting account: $e");
-    rethrow; // Rethrow the error to stop the function execution
   }
-}
 
-  void _confirmDeleteAccount(BuildContext context) {
+  Future<void> _confirmDeleteAccount(BuildContext context) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        String password = '';
+
         return AlertDialog(
-          title: const Text("Confirm Delete Account"),
-          content: const Text("Are you sure you want to delete your account? This action is permanent and cannot be undone."),
+          backgroundColor: AppColor.bgColor,
+          title: const Text(
+            'Confirm Deletion',
+            style: TextStyle(fontWeight: FontWeight.w400),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Enter your password to confirm account deletion:',
+                style: TextStyle(fontWeight: FontWeight.w400),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a password';
+                  }
+
+                  return null;
+                },
+                cursorColor: AppColor.btnColor,
+                obscureText: !_passwordVisible,
+                onChanged: (value) {
+                  password = value;
+                },
+                decoration: InputDecoration(
+                  contentPadding:
+                      EdgeInsets.symmetric(vertical: 12.0, horizontal: 10.0),
+                  hintText: 'Password',
+                  hintStyle: TextStyle(fontSize: 12),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppColor.btnColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppColor.hintColor, width: 0.5),
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  errorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red, width: 0.5),
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  focusedErrorBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.red, width: 0.5),
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                ),
+              ),
+            ],
+          ),
           actions: <Widget>[
             TextButton(
-              child: const Text("Cancel",style: TextStyle(color: AppColor.btnColor, fontWeight: FontWeight.bold),),
+              child: const Text('Cancel',
+                  style: TextStyle(
+                      color: AppColor.btnColor, fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text("Delete", style: TextStyle(color: AppColor.btnColor, fontWeight: FontWeight.bold),),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                    color: AppColor.btnColor, fontWeight: FontWeight.bold),
+              ),
               onPressed: () async {
                 Navigator.of(context).pop();
-                await deleteAccount();
-         
+                if (await _reauthenticateUser(password)) {
+                  await deleteAccount();
+                } else {
+                  _showErrorSnackbar('Incorrect password.');
+                }
               },
             ),
           ],
         );
       },
     );
+  }
+
+  void _showErrorSnackbar(String message) {
+    final snackBar = SnackBar(
+      backgroundColor: AppColor.btnColor,
+      content: Text(
+        message,
+        style: TextStyle(color: AppColor.blackColor),
+      ),
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+// Future<void> _deleteAccount() async {
+//     User? user = FirebaseAuth.instance.currentUser;
+//     String email = user?.email ?? '';
+
+//     try {
+//       await user?.delete();
+
+//       await FirebaseFirestore.instance
+//           .collection('register')
+//           .where('email', isEqualTo: email)
+//           .get()
+//           .then((querySnapshot) {
+//         querySnapshot.docs.forEach((doc) {
+//           doc.reference.delete();
+//         });
+//       });
+
+//       await logout(context);
+//     } catch (e) {
+//       print('Error deleting user account: $e');
+//     }
+//   }
+
+  Future<bool> _reauthenticateUser(String password) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user?.email ?? '',
+        password: password,
+      );
+      await user?.reauthenticateWithCredential(credential);
+      return true;
+    } catch (e) {
+      print('Reauthentication failed: $e');
+      return false;
+    }
   }
 
   void _showPending() {
@@ -419,7 +542,6 @@ Future<void> deleteAccount() async {
       ),
     );
   }
-
 
   void _Account_confirmation() {
     ScaffoldMessenger.of(context).showSnackBar(

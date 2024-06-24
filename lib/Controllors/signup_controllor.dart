@@ -60,7 +60,8 @@ class SignupController {
         int id = DateTime.now().millisecondsSinceEpoch;
 
         String currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-        String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+     String currentTime = DateFormat('h:mm a').format(DateTime.now());
+
         String imageUrl =
             'https://img1.wsimg.com/isteam/ip/ac71e8fd-9a69-4b93-a845-896c49c38929/image_6483441.JPG/:/rs=w:2320,h:2320';
 

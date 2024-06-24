@@ -14,7 +14,7 @@ class aUsers extends StatefulWidget {
 class _aUsersState extends State<aUsers> {
   late DateTime _selectedDate;
   bool _showAllUsers = true;
-
+ 
   @override
   void initState() {
     super.initState();
@@ -49,7 +49,7 @@ class _aUsersState extends State<aUsers> {
             child: StreamBuilder(
               stream: FirebaseFirestore.instance
                   .collection('RegisterUsers')
-                  .orderBy('time', descending: true)
+                  .orderBy('date', descending: true)
                   .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -91,7 +91,8 @@ class _aUsersState extends State<aUsers> {
                   email: document['email'].toString(),
                   image: document['image'].toString(),
                   username: document['name'].toString(),
-                  phone: document['phoneNumber'].toString(), state: document['State'].toString(), location: document['Location'].toString(), Nationality: document['Nationality'].toString(),
+                  phone: document['completenumber'].toString(), state: document['State'].toString(), location: document['Location'].toString(), Nationality: document['Nationality'].toString(),
+
                   industeries: document['Countryyy'], countrrr: document['industeries'],
                 ),
               ),
@@ -100,40 +101,51 @@ class _aUsersState extends State<aUsers> {
           child: Column(
             children: [
               SizedBox(height: 20,),
-              ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: (document['image'] != null &&
-                      document['image']!.isNotEmpty)
-                      ? NetworkImage(
-                      document['image'] as String)
-                      as ImageProvider<Object>?
-                      : const AssetImage("assets/images/tfndlog.jpg"),
-                  radius: 30,
-                ),
-                trailing: Text(
-                  document['date'],
-                  style: const TextStyle(
-                    color: AppColor.blackColor,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                title: Text(
-                  document['name'],
-                  style: const TextStyle(
-                    color: AppColor.blackColor,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  document['email'],
-                  style: const TextStyle(
-                    color: AppColor.darkTextColor,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
+            ListTile(
+  leading: CircleAvatar(
+    backgroundImage: (document['image'] != null && document['image']!.isNotEmpty)
+        ? NetworkImage(document['image'] as String) as ImageProvider<Object>?
+        : const AssetImage("assets/images/tfndlog.jpg"),
+    radius: 25,
+  ),
+  title: Text(
+    document['name'],
+    style: const TextStyle(
+      color: AppColor.blackColor,
+      fontSize: 12,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  subtitle: Padding(
+    padding: const EdgeInsets.only(top: 5),
+    child: Row(
+      children: [
+        Expanded(
+          child: Text(
+            document['email'],
+            style: const TextStyle(
+              color: AppColor.darkTextColor,
+              fontSize: 10,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        SizedBox(width: 8), // Adjust the width as needed for the space
+        Text(
+          '${document['time']} || ${document['date']}',
+          style: const TextStyle(
+            color: AppColor.blackColor,
+            fontSize: 8,
+            fontWeight: FontWeight.w500,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    ),
+  ),
+),
+
+
               const Divider(
                 color: AppColor.hintColor,
                 thickness: 0.5,

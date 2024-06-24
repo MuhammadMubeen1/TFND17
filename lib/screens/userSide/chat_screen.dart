@@ -25,6 +25,7 @@ class _ChatState extends State<Chat> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
   final SubscriptionService _subscriptionService = SubscriptionService();
+  final FocusNode descriptionFocusNode = FocusNode();
 
   List<DocumentSnapshot> posts = [];
   String? lastDisplayedDate;
@@ -87,297 +88,303 @@ class _ChatState extends State<Chat> {
             weight: FontWeight.w500,
           ),
         ),
-        body: isPaid == null
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.blackColor,
-                ), // Show circular progress indicator while checking subscription status
-              )
-            : isPaid == "paid"
-                ? FutureBuilder(
-                    future: getUserData(widget.userEmail.toString()),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasError) {
-                        return Center(child: Text('Error: ${snapshot.error}'));
-                      }
-
-                      // Build UI once userData is fetched
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: StreamBuilder(
-                              stream: FirebaseFirestore.instance
-                                  .collection('Posts')
-                                  .orderBy('count',
-                                      descending:
-                                          true) // Order posts based on count
-                                  .snapshots(),
-                              builder: (context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center(
-                                      child: CircularProgressIndicator(
-                                    color: AppColor.blackColor,
-                                  ));
-                                }
-                                if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Error: ${snapshot.error}'));
-                                }
-
-                                // Check if there are no posts
-                                if (snapshot.data!.docs.isEmpty) {
-                                  // Show a message or widget indicating no posts available
-                                  return const Center(
-                                    child: Text('No posts available'),
-                                  );
-                                }
-
-                                // Clear the list before adding new posts
-                                posts.clear();
-
-                                // Add all retrieved posts to the list
-                                posts.addAll(snapshot.data!.docs);
-
-                                // Initialize the AnimatedList with initial items
-                                return AnimatedList(
-                                  key: _listKey,
-                                  controller: _scrollController,
-                                  reverse: true,
-                                  initialItemCount: posts.length,
-                                  itemBuilder: (context, index, animation) {
-                                    if (index >= posts.length) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    final post = posts[index];
-                                    final time = post['time'] as String;
-
-                                    // Extracting the date from the post time
-                                    final postDate = DateFormat('MMM dd, yyyy')
-                                        .format(DateTime
-                                            .now()); // Change this line as per your date format
-
-                                    Widget postItem =
-                                        buildPostItem(post, time, animation);
-
-                                    // Checking if the post date is different from the last displayed date
-                                    if (postDate != lastDisplayedDate) {
-                                      // If different, display the post date
-                                      postItem = Column(
-                                        children: [
-                                          Text(
-                                            postDate,
-                                            style: const TextStyle(
-                                              color: AppColor.textColor,
-                                              fontWeight: FontWeight.bold,
+        body: GestureDetector(
+          onTap: () {
+          FocusScope.of(context).unfocus(); // Hide the keyboard
+        },
+          child: isPaid == null
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColor.blackColor,
+                  ), // Show circular progress indicator while checking subscription status
+                )
+              : isPaid == "paid"
+                  ? FutureBuilder(
+                      future: getUserData(widget.userEmail.toString()),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
+          
+                        // Build UI once userData is fetched
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: StreamBuilder(
+                                stream: FirebaseFirestore.instance
+                                    .collection('Posts')
+                                    .orderBy('count',
+                                        descending:
+                                            true) // Order posts based on count
+                                    .snapshots(),
+                                builder: (context,
+                                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const Center(
+                                        child: CircularProgressIndicator(
+                                      color: AppColor.blackColor,
+                                    ));
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                        child: Text('Error: ${snapshot.error}'));
+                                  }
+          
+                                  // Check if there are no posts
+                                  if (snapshot.data!.docs.isEmpty) {
+                                    // Show a message or widget indicating no posts available
+                                    return const Center(
+                                      child: Text('No posts available'),
+                                    );
+                                  }
+          
+                                  // Clear the list before adding new posts
+                                  posts.clear();
+          
+                                  // Add all retrieved posts to the list
+                                  posts.addAll(snapshot.data!.docs);
+          
+                                  // Initialize the AnimatedList with initial items
+                                  return AnimatedList(
+                                    key: _listKey,
+                                    controller: _scrollController,
+                                    reverse: true,
+                                    initialItemCount: posts.length,
+                                    itemBuilder: (context, index, animation) {
+                                      if (index >= posts.length) {
+                                        return const SizedBox.shrink();
+                                      }
+                                      final post = posts[index];
+                                      final time = post['time'] as String;
+          
+                                      // Extracting the date from the post time
+                                      final postDate = DateFormat('MMM dd, yyyy')
+                                          .format(DateTime
+                                              .now()); // Change this line as per your date format
+          
+                                      Widget postItem =
+                                          buildPostItem(post, time, animation);
+          
+                                      // Checking if the post date is different from the last displayed date
+                                      if (postDate != lastDisplayedDate) {
+                                        // If different, display the post date
+                                        postItem = Column(
+                                          children: [
+                                            Text(
+                                              postDate,
+                                              style: const TextStyle(
+                                                color: AppColor.textColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(
-                                              height:
-                                                  8), // Adjust spacing as needed
-                                          postItem,
+                                            const SizedBox(
+                                                height:
+                                                    8), // Adjust spacing as needed
+                                            postItem,
+                                          ],
+                                        );
+                                        // Update the last displayed date
+                                        lastDisplayedDate = postDate;
+                                      }
+          
+                                      return Column(
+                                        children: [
+                                          buildPostItem(post, time, animation),
+                                          const Divider(
+                                              height: 8.0,
+                                              color: Colors.grey), // Add divider
                                         ],
                                       );
-                                      // Update the last displayed date
-                                      lastDisplayedDate = postDate;
-                                    }
-
-                                    return Column(
-                                      children: [
-                                        buildPostItem(post, time, animation),
-                                        const Divider(
-                                            height: 8.0,
-                                            color: Colors.grey), // Add divider
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 15),
-                            child: Container(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFFFEBF2),
-                                borderRadius: BorderRadius.circular(16.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                    offset: Offset(10, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: (userData?.image != null &&
-                                            userData!.image!.isNotEmpty)
-                                        ? NetworkImage(
-                                                userData!.image! as String)
-                                            as ImageProvider<Object>?
-                                        : const AssetImage(
-                                            "assets/images/tfndlog.jpg"),
-                                    radius: 20,
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  Expanded(
-                                    child: TextFormField(
-                                      maxLines: null,
-                                      cursorColor: Colors.white,
-                                      controller: descriptionController,
-                                      style: const TextStyle(
-                                          color: AppColor.textColor),
-                                      decoration: const InputDecoration(
-                                        hintText: 'Type a message',
-                                        hintStyle: TextStyle(
-                                            color: AppColor.textColor,
-                                            fontWeight: FontWeight.bold),
-                                        border: InputBorder.none,
-                                        contentPadding: EdgeInsets.symmetric(
-                                            vertical: 15.0),
-                                        fillColor: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.send,
-                                      color: AppColor.btnColor,
-                                    ),
-                                    onPressed: () async {
-                                      await sendPost();
-                                      // Scroll to the top asifter sending a
-                                      _scrollController.animateTo(0,
-                                          duration: Duration(milliseconds: 500),
-                                          curve: Curves.easeInOut);
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
                                     },
-                                  ),
-                                ],
+                                  );
+                                },
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      );
-                    },
-                  )
-                : Center(
-                    child: Container(
-                      width: 310,
-                      height: 450,
-                      decoration: BoxDecoration(
-                        color: AppColor.btnColor,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(4, 4),
-                            blurRadius: 10,
-                            spreadRadius: 1,
-                          ),
-                          BoxShadow(
-                            color: Colors.white,
-                            offset: Offset(-4, -4),
-                            blurRadius: 10,
-                            spreadRadius: 1,
-                          ),
-                        ],
-                        gradient: const LinearGradient(
-                          colors: [AppColor.bgColor, AppColor.bgColor],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                      ),
-                      child: Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 30),
-                            child: Image(
-                              height: 140,
-                              image: AssetImage(
-                                "assets/images/tfndd.png",
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 18.0),
-                            child: Text(
-                              "Get access to exclusive content by subscribing to our post updates. Enjoy a seamless experience with premium features!",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: AppColor.textColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 100,
-                          ),
-                          Center(
-                            child: GestureDetector(
-                              onTap: () async {
-                                if (!_isSubscribing) {
-                                  // Check if not already subcribing
-                                  setState(() {
-                                    _isSubscribing =
-                                        true; // Start subscribing process
-                                  });
-                                  await _subscriptionService
-                                      .showSubscriptionPopup(
-                                          context, widget.userEmail.toString());
-                                  setState(() {
-                                    _isSubscribing =
-                                        false; // End subscribing process
-                                  });
-                                }
-                              },
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 15),
                               child: Container(
-                                height: 50,
-                                width: 250,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
-                                  color: AppColor.btnColor,
-                                  borderRadius: BorderRadius.circular(10),
+                                  color: Color(0xFFFFEBF2),
+                                  borderRadius: BorderRadius.circular(16.0),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.5),
-                                      offset: Offset(0, 3),
-                                      blurRadius: 6,
-                                      spreadRadius: 0,
+                                      color: Colors.grey.withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(10, 10),
                                     ),
                                   ],
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    "Subscribe Now"!,
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: (userData?.image != null &&
+                                              userData!.image!.isNotEmpty)
+                                          ? NetworkImage(
+                                                  userData!.image! as String)
+                                              as ImageProvider<Object>?
+                                          : const AssetImage(
+                                              "assets/images/tfndlog.jpg"),
+                                      radius: 20,
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        maxLines: null,
+                                           focusNode: descriptionFocusNode,
+                                        cursorColor: Colors.white,
+                                        controller: descriptionController,
+                                        style: const TextStyle(
+                                            color: AppColor.textColor),
+                                        decoration: const InputDecoration(
+                                          hintText: 'Type a message',
+                                          hintStyle: TextStyle(
+                                              color: AppColor.textColor,
+                                              fontWeight: FontWeight.bold),
+                                          border: InputBorder.none,
+                                          contentPadding: EdgeInsets.symmetric(
+                                              vertical: 15.0),
+                                          fillColor: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.send,
+                                        color: AppColor.btnColor,
+                                      ),
+                                      onPressed: () async {
+                                        await sendPost();
+                                        // Scroll to the top asifter sending a
+                                        _scrollController.animateTo(0,
+                                            duration: Duration(milliseconds: 500),
+                                            curve: Curves.easeInOut);
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        );
+                      },
+                    )
+                  : Center(
+                      child: Container(
+                        width: 310,
+                        height: 450,
+                        decoration: BoxDecoration(
+                          color: AppColor.btnColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(4, 4),
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                            ),
+                            BoxShadow(
+                              color: Colors.white,
+                              offset: Offset(-4, -4),
+                              blurRadius: 10,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                          gradient: const LinearGradient(
+                            colors: [AppColor.bgColor, AppColor.bgColor],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: Image(
+                                height: 140,
+                                image: AssetImage(
+                                  "assets/images/tfndd.png",
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 18.0),
+                              child: Text(
+                                "Get access to exclusive content by subscribing to our post updates. Enjoy a seamless experience with premium features!",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: AppColor.textColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 100,
+                            ),
+                            Center(
+                              child: GestureDetector(
+                                onTap: () async {
+                                  if (!_isSubscribing) {
+                                    // Check if not already subcribing
+                                    setState(() {
+                                      _isSubscribing =
+                                          true; // Start subscribing process
+                                    });
+                                    await _subscriptionService
+                                        .showSubscriptionPopup(
+                                            context, widget.userEmail.toString());
+                                    setState(() {
+                                      _isSubscribing =
+                                          false; // End subscribing process
+                                    });
+                                  }
+                                },
+                                child: Container(
+                                  height: 50,
+                                  width: 250,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.btnColor,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.white.withOpacity(0.5),
+                                        offset: Offset(0, 3),
+                                        blurRadius: 6,
+                                        spreadRadius: 0,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      "Subscribe Now"!,
+                                      style: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ));
+        ));
   }
 
   Widget buildPostItem(
